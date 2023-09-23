@@ -1,0 +1,155 @@
+<form class="mt-90px" name="container-form" method="POST" action="/courses/handle-form-trash-actions">
+    <div class="d-flex justify-content-center align-items-center flex-column">
+      <h2 >DANH SÁCH KHÓA HỌC ĐÃ XÓA</h2>
+      <a href="/me/stored/courses">Quay lại danh sách khóa học</a>
+
+      <div class="mt-4 d-flex align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+                <label class="form-check-label" for="checkbox-all">
+                    Chọn tất cả
+                </label>
+            </div>
+
+            <select class="form-control form-control-sm checkbox-select-all-options" name="action" required> 
+                <option value="">--Hành động--</option>
+                <option value="restore">Khôi phục</option>
+                <option value="force-delete">Xóa vĩnh viễn</option>
+            </select>
+
+            <button class="btn btn-primary btn-sm disabled check-all-submit-btn">Thực hiện</button>
+        </div>
+    </div>
+    <table class="table mt-4 table-bordered table-responsive">
+        <thead>
+            <tr>
+                <th scope="col" colspan="2">STT</th>
+                <th scope="col">Tên khóa học</th>
+                <th scope="col">Trình độ</th>
+                <th scope="col" >Thời gian</th>
+                <th scope="col" >Tùy chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each courses}}
+                <tr>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="courseIds[]" value="{{this._id}}">
+                        </div>
+                    </td>
+                    <th scope="row">{{sum @index 1}}</th>
+                    <td class="table-name-course">{{this.name}}</td>
+                    <td>{{this.level}}</td>
+                    <td>{{this.createdAt}}</td>
+                    <td>
+                        <a href="" class="btn btn-primary btn-restore" data-id="{{this._id}}">Khôi phục</a>
+                        <a href="" class="btn btn-danger" data-id="{{this._id}}" data-bs-toggle="modal" data-bs-target="#delete-course-modal">Xóa vĩnh viễn</a>
+                    </td>
+                </tr>
+
+            {{else}}
+                <tr>
+                    <td colspan="6">
+                        <h5>Không có khóa học nào đã được xóa 😗</h5>
+                    </td>
+                </tr>
+            {{/each}}
+            
+        </tbody>
+    </table>
+</form>
+
+{{!-- Confirm delete course --}}
+
+<div id="delete-course-modal" class="modal mt-90px" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">XÁC NHẬN XÓA?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Dữ liệu sẽ mất vĩnh viễn nếu tiếp tục. Bạn vẫn muốn xóa?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button id="btn-delete-course" type="button" class="btn btn-danger">Xóa bỏ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- Form để gửi method [DELETE, PATCH] --}}
+<form name="delete-course-form" method="POST" ></form>
+<form name="restore-course-form" method="POST" ></form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() { // Bỏ cũng được
+        var courseId;
+        const btnDeleteCourse =  document.getElementById('btn-delete-course');
+        const restoreForm = document.forms['restore-course-form'];
+        const deleteForm = document.forms['delete-course-form'];
+        const btnRestore = $('.btn-restore');
+        const checkboxAll = $('#checkbox-all'); 
+        const checkboxItem = $('input[name="courseIds[]"]');
+        const checkAllSubmitBtn = $('.check-all-submit-btn');
+
+        //When dialog confirm clicked
+        $('#delete-course-modal').on('show.bs.modal', function(e) {
+            let button = $(e.relatedTarget);
+            courseId = button.data('id');
+        })
+        
+        // When btnRestore clicked
+        btnRestore.click( function(e){
+            e.preventDefault();
+            courseId = $(this).data('id');
+            restoreForm.action = '/courses/' + courseId + '/restore?_method=PATCH';
+            restoreForm.submit();
+        })
+
+        // When btnDelete (Vĩnh viễn) clicked
+        btnDeleteCourse.addEventListener('click', function() {
+            deleteForm.action = '/courses/' + courseId + '/force-delete?_method=DELETE';
+            deleteForm.submit();
+        })
+
+        //=========== Handle Check box ===============
+        // Checkbox all changed
+        checkboxAll.change(function() {
+            let isCheckedAll = $(this).prop('checked');
+            checkboxItem.prop('checked', isCheckedAll);
+            renderCheckAllSubmitBtn();
+        })
+
+        // Checkbox item changed
+        checkboxItem.change(function() {
+            let isCheckedItem = checkboxItem.length === $('input[name="courseIds[]"]:checked').length;
+            checkboxAll.prop('checked', isCheckedItem);
+            renderCheckAllSubmitBtn();
+        })
+
+        // Check all submit btn clicked
+        // Validate select
+        checkAllSubmitBtn.on('submit', function(e) {
+            let isSubmittable = !$(this).hasClass('disabled');
+            if(!isSubmittable){
+                e.preventDefault();
+            }
+        })
+
+        // Re-render check all btn
+        function renderCheckAllSubmitBtn() {
+            let checkedCount = $('input[name="courseIds[]"]:checked').length;
+            if(checkedCount > 0) {
+                checkAllSubmitBtn.removeClass('disabled');
+            }else {
+                checkAllSubmitBtn.addClass('disabled');
+            }
+        }
+
+    })
+
+    
+</script>

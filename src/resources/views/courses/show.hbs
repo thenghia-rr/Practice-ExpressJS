@@ -1,0 +1,15 @@
+<div class="mt-90px">
+    <div class="row">
+        <div class="col-lg-3">
+            <button type="button" class="btn btn-success">HỌC NGAY</button>
+            <h5 class="mt-4">{{course.level}}</h5>
+        </div>
+        <div class="col-lg-9">
+            <h2 class="course-name">{{course.name}}</h2>
+            <div class="video-box">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/{{course.videoId}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <p class="course-desc">{{course.desc}}</p>
+        </div>
+    </div>
+</div>
