@@ -26,12 +26,15 @@
                 <th scope="col" colspan="2">STT</th>
                 <th scope="col">Tên khóa học
                     {{!-- Sort column name course --}}
-                    <a href="?_sort&column=name&type=desc" class="ms-2">
-                        <i class="fa-solid fa-sort"></i>
-                    </a>
+                    {{{sortTable 'name' _sort}}}
+                   
                 </th>
-                <th scope="col">Trình độ</th>
-                <th scope="col">Thời gian</th>
+                <th scope="col">Trình độ
+                     {{{sortTable 'level' _sort}}}
+                </th>
+                <th scope="col">Thời gian
+                     {{{sortTable 'createdAt' _sort}}}
+                </th>
                 <th scope="col">Tùy chọn</th>
             </tr>
         </thead>

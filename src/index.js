@@ -7,6 +7,7 @@ const app = express();
 const port = 3000;
 const route = require('./routes');
 const db = require('./config/db');
+const SortMiddleware = require('./app/middlewares/SortMiddleware')
 // Connect to DB
 db.connect()
 
@@ -18,6 +19,9 @@ app.use(express.json());
 
 app.use(methodOverride('_method'))
 
+// Custom middlewares
+app.use(SortMiddleware);
+
 // HTTP logger
 // app.use(morgan('combined'));
 
@@ -27,9 +31,30 @@ app.engine(
   handlebars.engine({
     extname: ".hbs",
     helpers: {
-      sum: (a, b) => a + b
-     }
-  })
+		sum: (a, b) => a + b,
+		sortTable: (field, sort) => {
+			// Xử lí khi sort thằng nào thì chỉ thằng đó thay đổi
+			const sortType = field === sort.column ? sort.type : 'default';
+			const icons = {
+				default: 'fa-solid fa-sort',
+				asc: 'fa-solid fa-sort-up',
+				desc: 'fa-solid fa-sort-down',
+			}
+			const types = {
+				default: 'desc',
+				asc: 'desc',
+				desc: 'asc',
+			}
+			const icon = icons[sortType]
+			const type = types[sortType]
+
+			return ` <a href="?_sort&column=${field}&type=${type}" class="ms-2" ">
+                        <i class="${icon}"></i>
+                    </a>
+					`
+		}	
+		}
+	})
 );
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname,"resources", "views"));
@@ -37,17 +62,6 @@ app.set("views", path.join(__dirname,"resources", "views"));
 // Routes Init
 route(app);
 
-app.get('/middleware', 
-  function(req, res, next) {
-	if(['vip', 'normal'].includes(req.query.ve)) {
-		return next();
-	}
-	res.status(403).send('Access Denied');
-  },
-  function(req, res, next) {
-	res.render('./middleware')
-  }
-)
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);
