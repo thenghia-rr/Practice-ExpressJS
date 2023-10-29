@@ -4,10 +4,12 @@ const methodOverride = require('method-override')
 const handlebars = require("express-handlebars");
 const path = require("path");
 const app = express();
-const port = 3000;
+require('dotenv').config()
+const PORT = process.env.PORT;
 const route = require('./routes');
 const db = require('./config/db');
 const SortMiddleware = require('./app/middlewares/SortMiddleware')
+
 // Connect to DB
 db.connect()
 
@@ -63,6 +65,6 @@ app.set("views", path.join(__dirname,"resources", "views"));
 route(app);
 
 
-app.listen(port, () => {
-  console.log(`App listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
 })
