@@ -14,6 +14,5 @@ async function connect() {
         console.log("Connected Failure", error);   
     }
 }
-// MONGODB_URL=mongodb+srv://thenghia_rr:NnV0gbWEGvDQsBHU@courses-api.ltokyry.mongodb.net/
-// mongodb://127.0.0.1:27017/f8_education_dev
+
 module.exports = { connect };
