@@ -13,8 +13,7 @@ const SortMiddleware = require('./app/middlewares/SortMiddleware')
 // Connect to DB
 db.connect()
 
-// app.use(express.static(path.join(__dirname, 'public')));
-app.use('/css', express.static(path.join(__dirname, 'public/css'), { headers: { 'Content-Type': 'text/css' } }));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware (body-parser)
 app.use(express.urlencoded({ extended: true }))
