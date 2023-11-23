@@ -9,7 +9,7 @@ async function connect() {
             // // useUnifiedTopology: true,
             // useCreateIndex: true,
         });
-        console.log("Connected Successfully");
+        console.log("Connected Database Successfully");
     } catch (error) {
         console.log("Connected Failure", error);   
     }
